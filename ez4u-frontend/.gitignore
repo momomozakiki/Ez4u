@@ -38,4 +38,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
-next-env.d.ts
+# ✅ IMPORTANT: DO NOT IGNORE next-env.d.ts
+# It should be COMMITTED to Git per Next.js best practices
