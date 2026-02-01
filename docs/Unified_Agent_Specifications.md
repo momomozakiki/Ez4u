@@ -46,7 +46,7 @@ graph TD
 
     UI -- "JSON/HTTPS" --> GW
     GW -- "JSON/HTTPS (Private)" --> BK
-    BK -- "TCP/IP (SQL)" --> DF
+    BK -- "TCP/IP (PostgreSQL)" --> DF
     INF -. "Monitors & Deploys" .-> UI
     INF -. "Monitors & Deploys" .-> GW
     INF -. "Monitors & Deploys" .-> BK
@@ -126,7 +126,7 @@ When Backend changes `/v1/users` response schema:
 ### **3. Compliance Requirements**
 *   **Golden State Matrix:**
     *   *Frontend:* Next.js 16.1.6+, React 19.2.3+, Radix UI (May 2025).
-    *   *Backend:* FastAPI 0.128.0+, SQLAlchemy 2.0.46+, Pydantic 2.12.5+.
+    *   *Backend:* FastAPI 0.128.0+, SQLAlchemy 2.0.46+ (Async), asyncpg 0.29.0+, Pydantic 2.12.5+.
 *   **Protocol Strictness:** Must never allow "convenience imports" that bypass architectural layers.
 
 ### **4. Acceptance Criteria**
@@ -217,9 +217,9 @@ async function sendRequest(payload: any) {
 describe('Gateway Contract', () => {
   it('POST /api/users matches v1 schema', async () => {
     const mockResponse = {
-      id: 1,
+      id: '550e8400-e29b-41d4-a716-446655440000',
       name: 'Test',
-      tenant_id: 'abc-123'
+      tenant_id: '98765432-10ab-cdef-1234-567890abcdef'
     };
     
     server.use(
@@ -385,6 +385,7 @@ async def process_resource(data: ResourceDTO):
 ### **3. Compliance Requirements**
 *   **Pydantic V2:** Must use Pydantic V2 models for all Request/Response schemas.
 *   **Isolation:** NEVER execute a query without a `tenant_id` filter (unless Super Admin).
+*   **Logic Implementation:** Must strictly follow **[SaaS_Implementation_Guide.md](./SaaS_Implementation_Guide.md)** for all Auth/Multi-Tenancy logic.
 
 ### **4. Acceptance Criteria**
 *   [ ] 100% Test Coverage for business logic.
@@ -393,7 +394,7 @@ async def process_resource(data: ResourceDTO):
 *   [ ] All responses are strictly typed JSON.
 *   [ ] **Tenant Isolation Tests:** Verify tenant A cannot access tenant B data
 *   [ ] **Load Testing:** 1000 concurrent tenants, <200ms p95 latency
-*   [ ] **Tenant Onboarding:** New tenant provisioned in <5 seconds
+*   [ ] **Tenant Onboarding:** New tenant provisioned in <5 seconds (follows SaaS Guide)
 *   [ ] **Data Export:** Tenant data export (GDPR) completes in <1 hour for 10GB dataset
 
 ### **Multi-Tenancy Patterns:**
@@ -413,10 +414,11 @@ async def inject_tenant(request: Request, call_next):
     
     return response
 
-# All queries automatically scoped
-async def get_users(db: Session, request: Request):
+# All queries automatically scoped (Async Style)
+async def get_users(db: AsyncSession, request: Request):
     # tenant_id automatically added by context manager
-    return db.query(User).all()  # Actually: WHERE tenant_id = ?
+    result = await db.execute(select(User)) # Actually: WHERE tenant_id = ?
+    return result.scalars().all()
 ```
 
 ### **X. Interface Contract Compliance**
@@ -445,47 +447,46 @@ async def get_users(db: Session, request: Request):
 **Scope:** Layer 4 (Database).
 
 ### **1. Functional Requirements**
-*   **Schema Definition:** Must define strictly typed SQLAlchemy models.
+*   **Database Engine:** Must use **PostgreSQL 16+** as the exclusive relational database.
+*   **ORM:** Must use **SQLAlchemy 2.0+** in **Async** mode (with `asyncpg` driver).
+*   **Schema Definition:** Must define strict models using SQLAlchemy Declarative Base.
+*   **Data Types:** Must use native PostgreSQL types:
+    *   Primary Keys: `UUID` (v7 preferred or v4) for all tables.
+    *   Unstructured Data: `JSONB` (Binary JSON) for flexible schemas.
+    *   Timestamps: `TIMESTAMP WITH TIME ZONE` (UTC).
 *   **Migrations:** Must generate and apply Alembic versioned migrations.
 *   **Integrity:** Must enforce Foreign Keys, Unique Constraints, and Check Constraints.
-*   **Optimization:** Must define indexes, specifically leading with `tenant_id`.
+*   **Optimization:** Must define indexes, specifically leading with `tenant_id` for multi-tenancy.
 *   **Expand-Contract Pattern:** New columns added as nullable, filled, then made required.
-*   **Dual-Write Period:** Old + new columns co-exist during transition.
-*   **Rollback Safety:** Migrations must be reversible.
 
-**Universal Code Snippet (Migration Pattern):**
-```python
-# Phase 1: Expand (Deploy Friday)
-class AddEmailColumn(Revision):
-    def upgrade(self):
-        op.add_column('users', sa.Column('email_v2', sa.String(), nullable=True))
-        
-# Phase 2: Migrate Data (Saturday batch job)
-# UPDATE users SET email_v2 = email WHERE email_v2 IS NULL
-
-# Phase 3: Contract (Deploy Monday, after backend uses email_v2)
-class RemoveOldEmail(Revision):
-    def upgrade(self):
-        op.alter_column('users', 'email_v2', new_column_name='email', nullable=False)
-        
-    def downgrade(self):
-        # Can roll back to Phase 2 state
-        op.alter_column('users', 'email', new_column_name='email_v2')
-```
-
-**Universal Code Snippet (Data Model):**
+**Universal Code Snippet (PostgreSQL Data Model):**
 ```python
 # SQLAlchemy Model (Data)
+from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import Column, DateTime, text
+
 class Resource(Base):
     __tablename__ = 'resources'
-    id = Column(Integer, primary_key=True)
-    data = Column(JSON)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    # UUID Primary Key
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()"))
+    
+    # Tenant Isolation
+    tenant_id = Column(UUID(as_uuid=True), nullable=False, index=True)
+    
+    # JSONB for flexible data with GIN Indexing capability
+    data = Column(JSONB, nullable=False, server_default=text("'{}'::jsonb"))
+    
+    # Timezone-aware timestamp
+    created_at = Column(DateTime(timezone=True), server_default=text("now()"))
 ```
 
 ### **2. Performance Requirements**
-*   **Indexing:** All queries used by Agent 4 must hit a covering index.
-*   **Connection Pooling:** Must use optimal pooling settings for AsyncPG.
+*   **Indexing:** 
+    *   All queries used by Agent 4 must hit a covering index.
+    *   `JSONB` columns queried by keys must have **GIN Indexes**.
+*   **Connection Pooling:** Must use `asyncpg` pool with **PgBouncer** for high-concurrency transaction management.
+*   **Vacuuming:** Autovacuum settings must be tuned for high-update tables.
 
 ### **3. Compliance Requirements**
 *   **RLS Strategy:** Must implement Row-Level Security pattern.
