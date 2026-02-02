@@ -7,7 +7,7 @@
 
 ## 📌 **Document Scope**
 This document defines the strictly enforced specifications for the **7 AI Agents** driving the Ez4u ecosystem.
-**Agent 0 (SOLO)** acts as the central governor, while **Agents 1-6** execute specific architectural layers.
+**Agent 0 (Project Governor)** acts as the central governor, while **Agents 1-6** execute specific architectural layers.
 
 ---
 
@@ -85,13 +85,19 @@ graph TD
 
 ---
 
-## 👑 **Agent 0: SOLO Agent**
-**Agent Name:** `Solo Agent`
+## 👑 **Agent 0: Project Governor**
+**Agent Name:** `project-governor`
 **Role:** Project Manager, Architect, and Governance Engine.
 **Scope:** Entire Ecosystem.
 
 ### **1. Functional Requirements**
 *   **Task Delegation:** Must analyze user inputs and delegate tasks to Agents 1-6 based on the *Task Distribution Algorithm* (UI → Agent 1, Logic → Agent 4, CI/CD → Agent 6, etc.).
+*   **Workload Monitoring & Fractal Expansion:**
+    *   Must monitor sub-agents for task overload or excessive complexity.
+    *   Must create **Sub-Sub Agents** (e.g., `Agent_1.1`) to handle specific components if overload is detected.
+    *   Must generate a dedicated Agent Prompt File for each new sub-sub agent.
+    *   **Constraint:** Sub-Sub Agent Name must be **≤ 20 characters** (including spaces).
+    *   **Format:** Must follow the standard 5-section agent document format.
 *   **Architecture Enforcement:** Must reject any code submission from Agents 1-6 that violates the *Physical Decoupling* principle.
 *   **Version Control:** Must enforce the "Golden State Matrix" (Next.js 16+, Python 3.10+) across all repositories.
 *   **Integration QA:** Must verify that interfaces between layers (e.g., JSON schemas) are compatible before acceptance.
@@ -124,9 +130,40 @@ When Backend changes `/v1/users` response schema:
 *   **Context Management:** Must maintain context of the "Master Todo List" without hallucinating completed tasks.
 
 ### **3. Compliance Requirements**
-*   **Golden State Matrix:**
-    *   *Frontend:* Next.js 16.1.6+, React 19.2.3+, Radix UI (May 2025).
-    *   *Backend:* FastAPI 0.128.0+, SQLAlchemy 2.0.46+ (Async), asyncpg 0.29.0+, Pydantic 2.12.5+.
+*   **Golden State Matrix (Versioning Authority):**
+    *   **Rule:** Agent 0 (Project Governor) is the **SOLE AUTHORITY** for setting these versions. Agents must **ONLY** use the technologies listed in their specific section below.
+
+#### **Layer 1: Frontend (Agents 1 & 2)**
+| Component | Technology | Required Version |
+| :--- | :--- | :--- |
+| **Framework** | Next.js | **16.1.6+** |
+| **Library** | React | **19.2.3+** |
+| **Language** | TypeScript | **5.x+** |
+| **UI Primitives** | Radix UI | **Latest Stable** |
+| **Styling** | Tailwind CSS | **4.x+** |
+
+#### **Layer 2: Gateway (Agent 3)**
+| Component | Technology | Required Version |
+| :--- | :--- | :--- |
+| **Runtime** | Next.js (Edge) | **16.1.6+** |
+| **Validation** | Zod | **3.x+** |
+| **Cache** | Redis | **7.x+** |
+
+#### **Layer 3: Backend (Agent 4)**
+| Component | Technology | Required Version |
+| :--- | :--- | :--- |
+| **Framework** | FastAPI | **0.128.0+** |
+| **Language** | Python | **3.10+** |
+| **Validation** | Pydantic | **2.12.5+** |
+
+#### **Layer 4: Data (Agent 5)**
+| Component | Technology | Required Version |
+| :--- | :--- | :--- |
+| **Database** | PostgreSQL | **16+** |
+| **ORM** | SQLAlchemy (Async) | **2.0.46+** |
+| **Driver** | asyncpg | **0.29.0+** |
+| **Migrations** | Alembic | **1.13+** |
+
 *   **Protocol Strictness:** Must never allow "convenience imports" that bypass architectural layers.
 
 ### **4. Acceptance Criteria**
@@ -238,6 +275,7 @@ describe('Gateway Contract', () => {
 *   **NO Database Access:** NEVER import DB drivers or ORMs.
 *   **NO Heavy Logic:** Offload complex calculations to the API layer.
 *   **Strict Typing:** `any` is forbidden. All props and state must be typed.
+*   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
 
 ---
 
@@ -284,6 +322,7 @@ describe('Gateway Contract', () => {
 *   **NO Browser APIs:** Cannot access `window`, `document`, or `localStorage`.
 *   **NO Client Context:** Cannot consume Context Providers directly.
 *   **NO Legacy Routing:** `pages/` directory is FORBIDDEN. Use `app/` directory exclusively.
+*   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
 
 ---
 
@@ -354,6 +393,7 @@ export async function POST(req: NextRequest) {
 *   **NO Business Logic:** Do not implement core domain rules here (pass to FastAPI).
 *   **NO Direct DB Writes:** Do not write to the primary database (PostgreSQL).
 *   **NO Long Processing:** Requests must be fast; offload heavy jobs to backend queues.
+*   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
 
 ---
 
@@ -438,6 +478,7 @@ async def get_users(db: AsyncSession, request: Request):
 *   **NO UI:** FORBIDDEN to generate HTML or CSS.
 *   **NO Frontend Coupling:** Zero knowledge of React or Next.js specifics.
 *   **NO Stateful Memory:** Do not store session state in memory (use Redis/DB).
+*   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
 
 ---
 
@@ -518,6 +559,7 @@ class Resource(Base):
 *   **NO Logic:** FORBIDDEN to use Stored Procedures for business logic.
 *   **NO Direct Access:** Database must strictly be accessed only by the Backend Kernel agent.
 *   **NO Nullable FKs:** Foreign keys should generally be non-nullable unless optional relationship.
+*   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
 
 ---
 
@@ -572,3 +614,4 @@ class Resource(Base):
 *   **NO Shared Infrastructure:** Each agent must have isolated resources (databases, caches).
 *   **NO Manual Deploys:** All production changes via automated pipelines.
 *   **NO Surprise Dependencies:** New cross-agent dependencies require architecture review.
+*   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
