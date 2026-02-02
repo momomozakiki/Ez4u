@@ -3,6 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime
 
+# Import routers
+from app.routers import auth, users
+
 # Create FastAPI app instance
 app = FastAPI(
     title="Ez4u Backend API",
@@ -18,6 +21,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include Routers
+app.include_router(auth.router, prefix="/api", tags=["auth"])
+app.include_router(users.router, prefix="/api", tags=["users"])
 
 # Pydantic model for response
 class HealthResponse(BaseModel):

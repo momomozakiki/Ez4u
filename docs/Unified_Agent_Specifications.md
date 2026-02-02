@@ -1,7 +1,7 @@
 # 🤖 **Unified AI Agent Specifications & Requirements**
 **The Single Source of Truth for the Ez4u Ecosystem**
-**Date:** 2026-02-01
-**Version:** 4.3 (Consolidated & Refined)
+**Date:** 2026-02-02
+**Version:** 5.1 (Added Common Code Mistakes & Awareness)
 
 ---
 
@@ -52,6 +52,22 @@ graph TD
     INF -. "Monitors & Deploys" .-> BK
     INF -. "Monitors & Deploys" .-> DF
 ```
+
+### **Communication Standards & Matrix**
+All agents must strictly adhere to the following interaction protocols to maintain security and isolation.
+
+| Communication Path | Status | Pattern | Use Case |
+|-------------------|--------|---------|----------|
+| **Agent_1 → Agent_3** | ✅ **ALLOWED** | Client fetch via Gateway | User interactions, form submissions |
+| **Agent_1 → Agent_4** | ❌ **FORBIDDEN** | Direct backend call | Security violation |
+| **Agent_1 → Agent_5** | ❌ **FORBIDDEN** | Direct database access | Critical security violation |
+| **Agent_2 → Agent_3** | ⚠️ **OPTIONAL** | Server-side fetch | Client-triggered server actions |
+| **Agent_2 → Agent_4** | ✅ **ALLOWED (PREFERRED)** | Direct server-to-server | Initial page data loading (SSR) |
+| **Agent_2 → Agent_5** | ❌ **FORBIDDEN** | Direct database access | Bypasses business logic |
+| **Agent_3 → Agent_4** | ✅ **ALLOWED** | Gateway proxy | Forwarding validated requests |
+| **Agent_3 → Agent_5** | ❌ **FORBIDDEN** | Direct database access | Gateway should not access DB |
+| **Agent_4 → Agent_5** | ✅ **ALLOWED (EXCLUSIVE)** | Direct database access | Backend owns data layer |
+
 ### **Why This "Over-Engineering" is Necessary (The AI Context Rationale)**
 *To the AI reading this: This architecture is NOT over-engineered. It is **Context-Optimized** for autonomous agents.*
 
@@ -82,6 +98,53 @@ graph TD
     *   *Why Separate?* To guarantee **Data Integrity & Performance**. Agent 5 focuses purely on efficient storage, indexing, and ACID compliance. It prevents "N+1 query" performance killers from leaking into the business logic.
 *   **Layer 6: Infrastructure (Agent 6)**
     *   *Why Separate?* To master **Operational Excellence**. Developers (Agents 1-5) focus on *code*, while Agent 6 focuses on *running* that code reliably. It manages the "Deployment Matrix," ensuring that a change in Agent 4 doesn't accidentally take down the Agent 1 production site.
+
+---
+
+## 🚫 **Common Code Mistakes & Awareness** (CRITICAL)
+*To prevent recurring issues, all agents MUST review this section before writing code.*
+
+### **1. Type Safety & Nullability (Python/Pydantic)**
+*   **Mistake:** Accessing `Optional` fields without `None` checks.
+*   **Symptoms:** Red squigglies in IDE, `AttributeError: 'NoneType' object has no attribute...`
+*   **Fix:** ALWAYS handle the `None` case explicitly.
+    ```python
+    # ❌ BAD
+    print(user.email.upper()) 
+    
+    # ✅ GOOD
+    if user.email:
+        print(user.email.upper())
+    else:
+        print("No email")
+    ```
+
+### **2. Pydantic Models vs SQLAlchemy Models**
+*   **Mistake:** Returning a raw SQLAlchemy object from a Pydantic endpoint without `model_validate` or `from_attributes=True`.
+*   **Symptoms:** `pydantic_core._pydantic_core.ValidationError: validation error...`
+*   **Fix:** Enable `from_attributes = True` (formerly `orm_mode`) in Pydantic config.
+    ```python
+    class UserResponse(BaseModel):
+        id: UUID
+        email: str
+        # ...
+        model_config = ConfigDict(from_attributes=True)
+    ```
+
+### **3. Unused Imports**
+*   **Mistake:** Leaving `import pytest` or other testing libraries in production code or unused in test files.
+*   **Symptoms:** Linter warnings, potentially larger bundle sizes (in JS).
+*   **Fix:** Remove unused imports. `pytest` does not need to be imported unless you use its decorators/fixtures explicitly.
+
+### **4. SQLite vs PostgreSQL Compatibility**
+*   **Mistake:** Using Postgres-specific types like `JSONB` or `ARRAY` without a fallback for SQLite testing.
+*   **Symptoms:** `sqlalchemy.exc.CompileError: (in table '...', column '...'): Compiler <...SQLiteCompiler> can't render element of type <JSONB>`
+*   **Fix:** Use generic types `JSON` instead of `JSONB` where possible, or use conditionally imported types based on the environment.
+
+### **5. Frontend Redirects**
+*   **Mistake:** Redirecting to a non-existent route (e.g., `/dashboard`) after login.
+*   **Symptoms:** 404 Page Not Found.
+*   **Fix:** Verify the target route exists before redirecting. Use constants for route paths.
 
 ---
 
@@ -205,17 +268,42 @@ When Backend changes `/v1/users` response schema:
 *   **State Management:** Must manage transient client state using `useState` or `useReducer`.
 *   **Input Handling:** Must handle forms using `react-hook-form` with Zod validation.
 *   **API Interaction:** Must fetch data **exclusively** from Agent 3 (API Gateway) using standard `fetch`.
+*   **Authentication:** Must attach CSRF tokens and standard headers to all requests.
 
 **Universal Code Snippet (Client-Side Fetch):**
 ```typescript
-// Client-side Fetch only
-async function sendRequest(payload: any) {
-  const response = await fetch('/api/gateway', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  return response.json();
+// ✅ CORRECT: Agent_1 → Agent_3 Communication
+// app/components/ClientForm.tsx
+'use client';
+
+import { useState } from 'react';
+import { getCsrfToken } from 'next-auth/react';
+
+export function ClientForm() {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (formData: FormData) => {
+    setLoading(true);
+    try {
+      // ✅ GOES THROUGH GATEWAY (Agent_3)
+      const response = await fetch('/api/v1/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': await getCsrfToken(),
+          'X-Request-ID': crypto.randomUUID()
+        },
+        body: JSON.stringify({ name: formData.get('name') })
+      });
+
+      if (!response.ok) throw new Error('Request failed');
+      const result = await response.json();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return <form action={handleSubmit}>...</form>;
 }
 ```
 
@@ -248,27 +336,6 @@ async function sendRequest(payload: any) {
 *   [ ] **Feature Flags:** Breaking changes hidden behind flags (e.g., LaunchDarkly)
 *   [ ] **Metrics:** Expose Prometheus metrics at /metrics endpoint
 
-**Reference Implementation (Testing Strategy):**
-```typescript
-// Contract test example
-describe('Gateway Contract', () => {
-  it('POST /api/users matches v1 schema', async () => {
-    const mockResponse = {
-      id: '550e8400-e29b-41d4-a716-446655440000',
-      name: 'Test',
-      tenant_id: '98765432-10ab-cdef-1234-567890abcdef'
-    };
-    
-    server.use(
-      http.post('/api/users', () => HttpResponse.json(mockResponse))
-    );
-    
-    const result = await createUser({name: 'Test'});
-    expect(result).toMatchSchema(UserV1Schema); // Versioned Zod schema
-  });
-});
-```
-
 ### ❌ **5. Constraints & Prohibitions**
 *   **NO Direct Backend Calls:** NEVER call `http://localhost:8000` or external services directly.
 *   **NO Server Secrets:** NEVER access `process.env` secrets (only `NEXT_PUBLIC_*`).
@@ -287,8 +354,36 @@ describe('Gateway Contract', () => {
 ### **1. Functional Requirements**
 *   **Route Definition:** Must define page routes using the App Router (`page.tsx`, `layout.tsx`).
 *   **Initial Fetching:** Must perform initial data fetching on the server to populate Client Components.
+*   **Direct Backend Access:** Must fetch data **DIRECTLY** from Agent 4 (Backend Kernel) for optimal performance (bypassing Gateway).
 *   **Metadata:** Must generate dynamic SEO metadata via `generateMetadata`.
 *   **Streaming:** Must implement `<Suspense>` boundaries for slow data requirements.
+
+**Universal Code Snippet (Server-Side Direct Fetch):**
+```typescript
+// ✅ CORRECT: Agent_2 → Agent_4 Direct (Bypass Agent_3)
+// app/dashboard/page.tsx
+import { getDashboardData } from '@/lib/backend-client';
+
+export default async function DashboardPage() {
+  // ✅ PARALLEL DATA FETCHING for optimal performance
+  const data = await getDashboardData();
+  return <div>{data.title}</div>;
+}
+
+// lib/backend-client.ts
+export async function getDashboardData() {
+  // ✅ Direct server-to-server call (Faster TTFB)
+  const response = await fetch(`${process.env.BACKEND_URL}/v1/dashboard`, {
+    headers: {
+      'X-Internal-Service': 'frontend-server',
+      'X-Service-Token': process.env.INTERNAL_SERVICE_TOKEN!,
+      'X-Request-ID': crypto.randomUUID()
+    },
+    next: { revalidate: 60 }
+  });
+  return response.json();
+}
+```
 
 ### **2. Performance Requirements**
 *   **TTFB:** Server response time (Time to First Byte) must be optimized via caching where appropriate.
@@ -322,6 +417,7 @@ describe('Gateway Contract', () => {
 *   **NO Browser APIs:** Cannot access `window`, `document`, or `localStorage`.
 *   **NO Client Context:** Cannot consume Context Providers directly.
 *   **NO Legacy Routing:** `pages/` directory is FORBIDDEN. Use `app/` directory exclusively.
+*   **NO Database Access:** NEVER import DB drivers or ORMs.
 *   **NO Hallucinations:** NEVER invent tasks, variables, or functions that were not explicitly requested.
 
 ---
@@ -341,26 +437,32 @@ describe('Gateway Contract', () => {
 *   **Version Routing:** Must route `/v1/*` and `/v2/*` independently.
 *   **Deprecation Headers:** Must return `Sunset` header for deprecated endpoints.
 
-**Universal Code Snippet (Versioned Gateway):**
+**Universal Code Snippet (Versioned Gateway Proxy):**
 ```typescript
-// Version-aware routing
-export async function POST(req: NextRequest) {
-  const apiVersion = req.headers.get('API-Version') || 'v1';
+// ✅ CORRECT: Agent_3 → Agent_4 Proxy
+// app/api/v1/[...path]/route.ts
+import { withAuth } from '@/lib/middleware/auth';
+
+export const POST = withAuth(async (req: Request) => {
+  const url = new URL(req.url);
+  const path = url.pathname.replace('/api/v1', '');
   
-  const backendUrl = apiVersion === 'v2' 
-    ? 'http://kernel:8000/v2/resource' 
-    : 'http://kernel:8000/v1/resource';
-    
-  return fetch(backendUrl, {
-    method: 'POST',
+  // ✅ Forward to Agent_4 with validated context
+  const backendResponse = await fetch(`${process.env.BACKEND_URL}${path}`, {
+    method: req.method,
     headers: {
-      'Content-Type': 'application/json',
-      'X-API-Version': apiVersion,
-      'X-Forwarded-Version': '1.2.0' // Gateway version
+      ...req.headers,
+      'X-User-ID': req.user.id, // Injected by Auth Middleware
+      'X-Gateway-Version': '1.0.0'
     },
     body: await req.text()
   });
-}
+
+  return new Response(backendResponse.body, {
+    status: backendResponse.status,
+    headers: backendResponse.headers
+  });
+});
 ```
 
 ### **2. Performance Requirements**
@@ -407,14 +509,18 @@ export async function POST(req: NextRequest) {
 *   **Multi-Tenancy:** Must enforce tenant isolation via `tenant_id` injection in all operations.
 *   **Orchestration:** Must coordinate workflows between services and Agent 5 (Data).
 *   **Background Jobs:** Must enqueue asynchronous tasks for long-running processes.
+*   **Dual Authentication:** Must support both User JWT (from Gateway) and Service Token (from Agent 2).
 
-**Universal Code Snippet (Kernel Route):**
+**Universal Code Snippet (Kernel Route & Auth):**
 ```python
 # FastAPI Route (Kernel)
 @app.post("/v1/resource")
-async def process_resource(data: ResourceDTO):
+async def process_resource(data: ResourceDTO, request: Request):
+    # ✅ Dual Auth: User JWT or Internal Service Token
+    # Middleware injects tenant_id and user_id into request.state
+    
     # Pure Business Logic
-    result = domain_service.calculate_tax(data.amount)
+    result = domain_service.calculate_tax(data.amount, request.state.tenant_id)
     return {"result": result}
 ```
 
@@ -442,8 +548,8 @@ async def process_resource(data: ResourceDTO):
 # Middleware enforces tenant_id injection
 @app.middleware("http")
 async def inject_tenant(request: Request, call_next):
-    token = request.headers.get("Authorization")
-    tenant_id = extract_tenant_from_jwt(token)
+    # Supports "Bearer <jwt>" OR "X-Service-Token"
+    tenant_id = extract_tenant_id(request)
     
     # Inject into request state
     request.state.tenant_id = tenant_id
@@ -453,12 +559,6 @@ async def inject_tenant(request: Request, call_next):
         response = await call_next(request)
     
     return response
-
-# All queries automatically scoped (Async Style)
-async def get_users(db: AsyncSession, request: Request):
-    # tenant_id automatically added by context manager
-    result = await db.execute(select(User)) # Actually: WHERE tenant_id = ?
-    return result.scalars().all()
 ```
 
 ### **X. Interface Contract Compliance**

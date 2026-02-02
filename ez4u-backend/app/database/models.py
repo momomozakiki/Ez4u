@@ -6,7 +6,8 @@ from sqlalchemy import (
     UniqueConstraint, Index, Text, Table, Column, func, text
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import JSON
+# from sqlalchemy.dialects.postgresql import JSONB
 from app.database.base import Base
 
 # ----------------------------------------------------------------------
@@ -26,6 +27,11 @@ class User(Base):
     identities: Mapped[List["UserIdentity"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     tenant_members: Mapped[List["TenantMember"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     global_roles: Mapped[List["UserGlobalRole"]] = relationship(foreign_keys="[UserGlobalRole.user_id]", back_populates="user")
+    
+    # Profile Relationships
+    addresses: Mapped[List["UserAddress"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    phone_numbers: Mapped[List["UserPhoneNumber"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    emails: Mapped[List["UserEmail"]] = relationship(back_populates="user", cascade="all, delete-orphan")
 
 class UserIdentity(Base):
     __tablename__ = "user_identities"
@@ -38,9 +44,55 @@ class UserIdentity(Base):
     
     __table_args__ = (
         UniqueConstraint("provider", "subject", name="uq_provider_subject"),
-        Index("ix_user_identities_user_id", "user_id")
+        # Index("ix_user_identities_user_id", "user_id") # Handled by mapped_column(index=True)
     )
     user: Mapped["User"] = relationship(back_populates="identities")
+
+# ----------------------------------------------------------------------
+# USER PROFILE LAYER
+# ----------------------------------------------------------------------
+
+class UserAddress(Base):
+    __tablename__ = "user_addresses"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    street: Mapped[str] = mapped_column(String(255), nullable=False)
+    city: Mapped[str] = mapped_column(String(100), nullable=False)
+    state: Mapped[Optional[str]] = mapped_column(String(100))
+    postal_code: Mapped[str] = mapped_column(String(20), nullable=False)
+    country: Mapped[str] = mapped_column(String(100), nullable=False)
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=False)
+    label: Mapped[Optional[str]] = mapped_column(String(50)) # e.g., "Home", "Work"
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped["User"] = relationship(back_populates="addresses")
+
+class UserPhoneNumber(Base):
+    __tablename__ = "user_phone_numbers"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    phone_number: Mapped[str] = mapped_column(String(50), nullable=False)
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=False)
+    label: Mapped[Optional[str]] = mapped_column(String(50))
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped["User"] = relationship(back_populates="phone_numbers")
+
+class UserEmail(Base):
+    __tablename__ = "user_emails"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
+    is_primary: Mapped[bool] = mapped_column(Boolean, default=False)
+    label: Mapped[Optional[str]] = mapped_column(String(50))
+    verified_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped["User"] = relationship(back_populates="emails")
 
 # ----------------------------------------------------------------------
 # TENANCY & RBAC LAYER
@@ -73,7 +125,7 @@ class Role(Base):
     
     __table_args__ = (
         UniqueConstraint("tenant_id", "name", name="uq_tenant_role_name"),
-        Index("ix_roles_tenant_id", "tenant_id")
+        # Index("ix_roles_tenant_id", "tenant_id") # Handled by mapped_column(index=True)
     )
     tenant: Mapped["Tenant"] = relationship(back_populates="roles")
     tenant_members: Mapped[List["TenantMember"]] = relationship(back_populates="role")
@@ -91,8 +143,8 @@ class TenantMember(Base):
     
     __table_args__ = (
         UniqueConstraint("user_id", "tenant_id", name="uq_user_tenant"),  # CRITICAL: Prevent duplicate memberships
-        Index("ix_tenant_members_tenant_id", "tenant_id"),
-        Index("ix_tenant_members_user_id", "user_id")
+        # Index("ix_tenant_members_tenant_id", "tenant_id"), # Handled by mapped_column(index=True)
+        # Index("ix_tenant_members_user_id", "user_id")      # Handled by mapped_column(index=True)
     )
     tenant: Mapped["Tenant"] = relationship(back_populates="tenant_members")
     user: Mapped["User"] = relationship(back_populates="tenant_members")
@@ -161,7 +213,7 @@ class Resource(Base):
     tenant_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    data: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb")) # Flexible schema
+    data: Mapped[dict] = mapped_column(JSON, nullable=True) # Flexible schema, removed server_default for SQLite compat
     
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
