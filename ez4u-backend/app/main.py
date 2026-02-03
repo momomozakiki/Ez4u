@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 # Import routers
-from app.routers import auth, users
+from app.routers import auth, users, tenants
 
 # Create FastAPI app instance
 app = FastAPI(
@@ -25,6 +25,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(auth.router, prefix="/api", tags=["auth"])
 app.include_router(users.router, prefix="/api", tags=["users"])
+app.include_router(tenants.router, prefix="/api", tags=["tenants"])
 
 # Pydantic model for response
 class HealthResponse(BaseModel):
