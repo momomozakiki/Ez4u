@@ -14,34 +14,34 @@
 - Streaming with Suspense boundaries
 
 ### **Core Frameworks**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Next.js** | `^16.1.6` | App Router, Server Components, SSR | ✅ Matches document |
-| **React** | `^19.2.3` | UI components, React Server Components | ✅ Latest React 19 |
-| **TypeScript** | `^5.9.3` | Type safety, strict typing | ✅ Required by document |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Next.js** | App Router, Server Components, SSR | ✅ Matches document |
+| **React** | UI components, React Server Components | ✅ Latest React 19 |
+| **TypeScript** | Type safety, strict typing | ✅ Required by document |
 
 ### **UI & Styling**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Tailwind CSS** | `^4.1.18` | Utility-first CSS framework | ✅ Document specifies Tailwind |
-| **Radix UI** | `^1.2.0` | Unstyled, accessible primitives | ✅ Modern UI library |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Tailwind CSS** | Utility-first CSS framework | ✅ Document specifies Tailwind |
+| **Radix UI** | Unstyled, accessible primitives | ✅ Modern UI library |
 
 ### **State Management**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Zustand** | `^5.0.0` | Client-side state management | ✅ Explicitly required |
-| **TanStack Query** | `^5.48.2` | Server state caching, mutations | ✅ Modern data fetching |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Zustand** | Client-side state management | ✅ Explicitly required |
+| **TanStack Query** | Server state caching, mutations | ✅ Modern data fetching |
 
 ### **Forms & Validation**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **React Hook Form** | `^7.52.1` | Form handling, validation | ✅ Required by document |
-| **Zod** | `^3.23.8` | Schema validation | ✅ Explicitly required |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **React Hook Form** | Form handling, validation | ✅ Required by document |
+| **Zod** | Schema validation | ✅ Explicitly required |
 
 ### **HTTP Client**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Axios** | `^1.7.2` | HTTP requests to API routes | ✅ Standard choice |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Axios** | HTTP requests to API routes | ✅ Standard choice |
 
 ### **Strict Protocol (MUST DO)**
 - ✅ Use `'use client'` directive for interactive components
@@ -74,20 +74,20 @@
 - Response caching (public data, CDN headers)
 
 ### **Core Frameworks**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Next.js API Routes** | `^16.1.6` | Built-in API route handlers | ✅ Native to Next.js |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Next.js API Routes** | Built-in API route handlers | ✅ Native to Next.js |
 
 ### **Validation & Security**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Zod** | `^3.23.8` | Request/response validation | ✅ Explicitly required |
-| **@types/jsonwebtoken** | `^9.0.5` | JWT type definitions | ✅ Auth token handling |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Zod** | Request/response validation | ✅ Explicitly required |
+| **@types/jsonwebtoken** | JWT type definitions | ✅ Auth token handling |
 
 ### **Rate Limiting**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **next-rate-limit** | `^1.0.0` | Rate limiting middleware | ✅ Required by document |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **next-rate-limit** | Rate limiting middleware | ✅ Required by document |
 
 ### **Strict Protocol (MUST DO)**
 - ✅ Validate all incoming requests with Zod schemas
@@ -118,31 +118,31 @@
 - Prometheus metrics collection
 
 ### **Core Frameworks**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **FastAPI** | `^0.128.0` | HTTP server, async endpoints | ✅ Latest stable |
-| **Uvicorn** | `^0.40.0` | ASGI server | ✅ Required |
-| **Starlette** | `^0.50.0` | ASGI framework (FastAPI dependency) | ✅ Included |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **FastAPI** | HTTP server, async endpoints | ✅ Latest stable |
+| **Uvicorn** | ASGI server | ✅ Required |
+| **Starlette** | ASGI framework (FastAPI dependency) | ✅ Included |
 
 ### **Authentication & Security**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **python-jose** | `^3.3.0` | JWT operations | ✅ Required |
-| **passlib** | `^1.7.4` | Password hashing (bcrypt) | ✅ Required |
-| **python-multipart** | `^0.0.17` | Form data parsing | ✅ Standard |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **python-jose** | JWT operations | ✅ Required |
+| **passlib** | Password hashing (bcrypt) | ✅ Required |
+| **python-multipart** | Form data parsing | ✅ Standard |
 
 ### **Validation & Types**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Pydantic** | `^2.12.5` | Data validation, schemas | ✅ Pydantic V2 required |
-| **email-validator** | `^2.2.0` | Email validation | ✅ Standard |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Pydantic** | Data validation, schemas | ✅ Pydantic V2 required |
+| **email-validator** | Email validation | ✅ Standard |
 
 ### **Observability**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **prometheus-fastapi-instrumentator** | `^7.0.0` | Prometheus metrics | ✅ Required |
-| **opentelemetry-api** | `^1.26.0` | Distributed tracing | ✅ Trace propagation |
-| **opentelemetry-sdk** | `^1.26.0` | OpenTelemetry SDK | ✅ Required |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **prometheus-fastapi-instrumentator** | Prometheus metrics | ✅ Required |
+| **opentelemetry-api** | Distributed tracing | ✅ Trace propagation |
+| **opentelemetry-sdk** | OpenTelemetry SDK | ✅ Required |
 
 ### **Strict Protocol (MUST DO)**
 - ✅ Use Pydantic V2 models for all schemas
@@ -176,15 +176,15 @@
 - Transaction boundary management
 
 ### **Core Frameworks**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **Pydantic** | `^2.12.5` | Domain models, validation | ✅ Required |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **Pydantic** | Domain models, validation | ✅ Required |
 
 ### **External Integrations**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **httpx** | `^0.27.0` | Async HTTP client | ✅ Circuit breaker pattern |
-| **pybreaker** | `^1.1.1` | Circuit breaker implementation | ✅ Required |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **httpx** | Async HTTP client | ✅ Circuit breaker pattern |
+| **pybreaker** | Circuit breaker implementation | ✅ Required |
 
 ### **Strict Protocol (MUST DO)**
 - ✅ Keep logic framework-agnostic (no FastAPI/SQLAlchemy imports)
@@ -218,21 +218,21 @@
 - Slow query logging (>100ms threshold)
 
 ### **Core Frameworks**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **SQLAlchemy** | `^2.0.32` | ORM, async support | ✅ SQLAlchemy 2.0 required |
-| **Alembic** | `^1.13.3` | Database migrations | ✅ Required |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **SQLAlchemy** | ORM, async support | ✅ SQLAlchemy 2.0 required |
+| **Alembic** | Database migrations | ✅ Required |
 
 ### **Database Drivers**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **asyncpg** | `^0.29.0` | Async PostgreSQL driver | ✅ Recommended |
-| **psycopg2-binary** | `^2.9.9` | Sync PostgreSQL driver | ✅ Fallback option |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **asyncpg** | Async PostgreSQL driver | ✅ Recommended |
+| **psycopg2-binary** | Sync PostgreSQL driver | ✅ Fallback option |
 
 ### **UUID Support**
-| Package | Version | Purpose | Document Alignment |
-|---------|---------|---------|-------------------|
-| **uuid7** | `^0.1.0` | UUID v7 generation | ✅ Time-ordered UUIDs |
+| Package | Purpose | Document Alignment |
+|---------|---------|-------------------|
+| **uuid7** | UUID v7 generation | ✅ Time-ordered UUIDs |
 
 ### **Strict Protocol (MUST DO)**
 - ✅ Use UUID v7 primary keys (time-ordered, distributed-safe)
@@ -333,74 +333,27 @@ Layer 1
 
 ---
 
-## 📦 **Reference Package Definitions**
-
-### **Frontend (Layer 1 & 2) - package.json**
-```json
-{
-  "dependencies": {
-    "next": "^16.1.6",
-    "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "zustand": "^5.0.0",
-    "@tanstack/react-query": "^5.48.2",
-    "react-hook-form": "^7.52.1",
-    "zod": "^3.23.8",
-    "axios": "^1.7.2",
-    "tailwindcss": "^4.1.18",
-    "@radix-ui/react-dialog": "^1.2.0"
-  },
-  "devDependencies": {
-    "typescript": "^5.9.3",
-    "@types/react": "^19.2.10",
-    "@types/node": "^20.19.30"
-  }
-}
-```
-
-### **Backend (Layer 3, 4 & 5) - requirements.txt**
-```python
-fastapi==0.128.0
-uvicorn==0.40.0
-pydantic==2.12.5
-sqlalchemy==2.0.32
-alembic==1.13.3
-asyncpg==0.29.0
-python-jose==3.3.0
-passlib==1.7.4
-bcrypt==4.2.0
-python-multipart==0.0.17
-email-validator==2.2.0
-prometheus-fastapi-instrumentator==7.0.0
-opentelemetry-api==1.26.0
-opentelemetry-sdk==1.26.0
-httpx==0.27.0
-pybreaker==1.1.1
-uuid7==0.1.0
-python-dotenv==1.2.1
-```
-
----
-
 ## ✅ **VALIDATION CHECKLIST**
+
+> **Note:** Refer to `package.json` and `requirements.txt` for active versions. Ensure all new packages added to the project are reflected in the Architectural Purpose tables above.
 
 | Requirement | Status | Notes |
 |-------------|--------|-------|
-| **Layer 1: Zustand for client state** | ✅ | Included `zustand ^5.0.0` |
-| **Layer 1: TanStack Query for server state** | ✅ | Included `@tanstack/react-query ^5.48.2` |
-| **Layer 1: React Hook Form + Zod** | ✅ | Both included with correct versions |
-| **Layer 2: Zod validation** | ✅ | Included `zod ^3.23.8` |
-| **Layer 2: Rate limiting** | ✅ | Included `next-rate-limit` |
-| **Layer 3: Pydantic V2** | ✅ | Included `pydantic ^2.12.5` |
-| **Layer 3: Dual auth (JWT + Service Token)** | ✅ | Included `python-jose`, `passlib` |
-| **Layer 3: Prometheus metrics** | ✅ | Included instrumentation package |
-| **Layer 3: OpenTelemetry tracing** | ✅ | Included `opentelemetry-*` packages |
+| **Layer 1: Zustand for client state** | ✅ | Required for client state |
+| **Layer 1: TanStack Query for server state** | ✅ | Required for server state |
+| **Layer 1: React Hook Form + Zod** | ✅ | Required for forms |
+| **Layer 2: Zod validation** | ✅ | Required for validation |
+| **Layer 2: Rate limiting** | ✅ | Required for BFF |
+| **Layer 3: Pydantic V2** | ✅ | Required for validation |
+| **Layer 3: Dual auth (JWT + Service Token)** | ✅ | Required for security |
+| **Layer 3: Prometheus metrics** | ✅ | Required for observability |
+| **Layer 3: OpenTelemetry tracing** | ✅ | Required for tracing |
 | **Layer 4: Framework-agnostic logic** | ✅ | No FastAPI/SQLAlchemy imports |
-| **Layer 4: Circuit breaker pattern** | ✅ | Included `pybreaker` |
-| **Layer 4: Repository pattern** | ✅ | Design pattern (no specific package) |
-| **Layer 5: SQLAlchemy 2.0** | ✅ | Included `sqlalchemy ^2.0.32` |
-| **Layer 5: Alembic migrations** | ✅ | Included `alembic ^1.13.3` |
-| **Layer 5: Async PostgreSQL driver** | ✅ | Included `asyncpg ^0.29.0` |
-| **Layer 5: UUID v7 support** | ✅ | Included `uuid7 ^0.1.0` |
-| **FastAPI version updated** | ✅ | Updated to `^0.128.0` (latest stable) |
-| **Next.js version aligned** | ✅ | Updated to `^16.1.6` (matches document) |
+| **Layer 4: Circuit breaker pattern** | ✅ | Required for stability |
+| **Layer 4: Repository pattern** | ✅ | Design pattern |
+| **Layer 5: SQLAlchemy 2.0** | ✅ | Required ORM |
+| **Layer 5: Alembic migrations** | ✅ | Required migrations |
+| **Layer 5: Async PostgreSQL driver** | ✅ | Required driver |
+| **Layer 5: UUID v7 support** | ✅ | Required for PKs |
+| **FastAPI version aligned** | ✅ | Matches requirements.txt |
+| **Next.js version aligned** | ✅ | Matches package.json |
