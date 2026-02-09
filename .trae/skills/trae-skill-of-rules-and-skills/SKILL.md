@@ -24,9 +24,12 @@ description: "Categorizes guidance into rules vs skills. Invoke when adding/modi
 - Frontmatter must include:
   - `name`: equals `<skill-name>`
   - `description`: what the skill does AND when to invoke
-- Allowed subfolders: `resources/`, `examples/`, `templates/`
+- Required subfolders and their purposes:
+  - `examples/` - Reference snippets demonstrating the skill in action (runnable code samples, usage patterns)
+  - `templates/` - Scaffolds with `{{placeholders}}` for quick creation (standardized formats with fill-in fields)
+  - `resources/` - Supporting assets and reference materials (external references, documentation)
 - Keep all skill assets inside the skill directory.
- - Keep SKILL.md concise (purpose, guidance, checklist). Place extended code samples in `examples/` and scaffolds in `templates/`.
+- Keep SKILL.md concise (purpose, guidance, checklist). Place extended code samples in `examples/` and scaffolds in `templates/`.
 
 ## Examples (Categorization Rationale)
 ```
@@ -34,27 +37,49 @@ description: "Categorizes guidance into rules vs skills. Invoke when adding/modi
 [CATEGORIZATION] Placing in skills.md because this demonstrates a reusable implementation pattern.
 ```
 
-## Verification Checklist
-- Placement matches decision flow (rules vs skills).
-- `.trae/skills/<name>/SKILL.md` exists; `name` equals folder.
-- Description includes explicit invoke triggers (<200 chars).
-- Subfolders exist if referenced: `resources/`, `examples/`, `templates/`.
+## Template Usage Instructions
+
+### Using Skill Templates
+1. Copy `templates/skill-template.md` to your new skill directory
+2. Replace `<skill-name>` with your actual skill folder name (lowercase-hyphen format)
+3. Replace `<does X. Invoke when Y or user asks Z>` with specific invoke triggers
+4. Fill in `<Skill Title>`, `<what this skill teaches>`, and `<how to apply patterns>`
+5. Add runnable code examples in the Examples section
+
+### Using Rule Templates  
+1. Copy `templates/rules-template.md` to your new rule file
+2. Add appropriate frontmatter (see Rule Frontmatter Setup section above)
+3. Replace constraint placeholders with your specific rules
+4. Ensure MUST DO/PROHIBITED sections are actionable and specific
+
+### Template Checklist
+- Templates contain `{{placeholders}}` for easy identification
+- Skill templates include required frontmatter fields
+- Rule templates follow the MUST DO/PROHIBITED format
+- All placeholders are replaced before finalizing
 
 ## Rule Frontmatter Setup
-- Always Apply:
+
+### Three Application Modes
+
+1. **Always Apply Mode** - Rule applies to all files, all the time
 ```yaml
 ---
 alwaysApply: true
 ---
 ```
-- Apply Intelligently:
+**Use when**: Universal constraints like security, formatting, or core architectural rules.
+
+2. **Apply Intelligently Mode** - Rule applies based on context/description matching
 ```yaml
 ---
 alwaysApply: false
 description: "Applies when editing Tailwind-styled React/Next components"
 ---
 ```
-- Apply to Specific Files:
+**Use when**: Domain-specific guidance that should trigger contextually.
+
+3. **Apply to Specific Files Mode** - Rule applies only to matched file patterns
 ```yaml
 ---
 alwaysApply: false
@@ -63,7 +88,10 @@ globs:
   - "styles/**/*.css"
 ---
 ```
-- Checklist:
-- Confirm `alwaysApply` matches the intended mode.
-- Provide concise `description` for intelligent mode.
-- Define `globs` for specific-file mode.
+**Use when**: File-type or location-specific rules.
+
+### Frontmatter Checklist
+- Confirm `alwaysApply` matches the intended mode (true/false)
+- For intelligent mode: Provide concise `description` with invoke triggers (<200 chars)
+- For specific-files mode: Define `globs` with proper file patterns
+- Never use both `description` and `globs` together

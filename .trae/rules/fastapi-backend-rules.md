@@ -1,6 +1,6 @@
 ---
-name: fastapi-backend-rules
-description: FastAPI HTTP/API layer coding standards for AI assistance
+alwaysApply: false
+description: "Applies when editing FastAPI backend code."
 ---
 
 # FastAPI Backend Rules

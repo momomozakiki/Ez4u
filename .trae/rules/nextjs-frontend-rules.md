@@ -1,6 +1,6 @@
 ---
-name: nextjs-frontend-rules
-description: Next.js Frontend (React Components) coding standards for AI
+alwaysApply: false
+description: "Applies when editing Next.js frontend components."
 ---
 
 # Next.js Frontend Rules

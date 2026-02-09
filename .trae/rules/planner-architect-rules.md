@@ -1,8 +1,8 @@
-# Planner Evolution Rules
 ---
-name: planner-evolution-rules
-description: Rules for evolving the General Plan to align with user requirements
+alwaysApply: true
 ---
+
+# Planner Architect Rules
 
 ## ✅ MUST DO
 1. **Inherit Context**: Always read the existing plan (if any) before generating a new one.

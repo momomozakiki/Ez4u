@@ -1,6 +1,6 @@
 ---
-name: python-business-logic-rules
-description: Python Business Logic Layer coding standards for AI
+alwaysApply: false
+description: "Applies when editing Python business logic."
 ---
 
 # Python Business Logic Rules

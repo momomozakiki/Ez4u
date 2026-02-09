@@ -1,6 +1,6 @@
 ---
-name: nextjs-bff-api-rules
-description: Next.js BFF (API Routes) coding standards for AI
+alwaysApply: false
+description: "Applies when editing Next.js BFF API routes."
 ---
 
 # Next.js BFF API Routes Rules

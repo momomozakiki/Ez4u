@@ -1,3 +1,7 @@
+---
+alwaysApply: false
+description: "Applies when adding/modifying guidance; enforces placement: constraints → rules, patterns/examples/workflows → skills."
+---
 # Project Rules: AI Guidance Categorization
 
 ## ✅ MUST DO

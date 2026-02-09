@@ -2,10 +2,6 @@
 alwaysApply: true
 ---
 # Anti-Hallucination Rules
----
-name: anti-hallucination-rules
-description: Universal rules to prevent factual and technical hallucinations in all responses
----
 
 ## ✅ MUST DO
 1. Verify language/framework versions BEFORE answering (Technical)

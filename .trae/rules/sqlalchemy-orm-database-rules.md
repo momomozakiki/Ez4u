@@ -1,6 +1,6 @@
 ---
-name: sqlalchemy-orm-database-rules
-description: SQLAlchemy ORM & Database Layer coding standards for AI
+alwaysApply: false
+description: "Applies when editing SQLAlchemy ORM and database-related code."
 ---
 
 # SQLAlchemy ORM Database Rules

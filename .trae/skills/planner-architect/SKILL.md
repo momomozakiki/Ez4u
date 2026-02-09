@@ -1,5 +1,5 @@
 ---
-name: architect-planner
+name: planner-architect
 description: Analyzes project architecture, reads version manifests, and generates detailed, atomic implementation plans with agent-specific checklists.
 ---
 
@@ -23,7 +23,7 @@ Before generating any plan, you MUST read the following files to establish groun
 1.  `package.json` (for Frontend stack versions)
 2.  `requirements.txt` (for Backend stack versions)
 3.  `resources/unified_architecture.md` (for Architectural Standards)
-4.  `.trae/rules/planner-evolution-rules.md` (for Planning Strategy)
+4.  `.trae/rules/planner-architect-rules.md` (for Planning Strategy)
 
 ### 2. 🧠 Analysis & Breakdown
 Break the user's request down into **Atomic Micro-Tasks**.
