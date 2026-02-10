@@ -9,6 +9,7 @@ description: "Applies when adding/modifying guidance; enforces placement: constr
 - Place patterns/examples/workflows in skills using descriptive language.
 - Split mixed guidance: constraints to rules; patterns/examples to skills.
 - Use skill folder structure: `.trae/skills/<skill-name>/SKILL.md`.
+- ALWAYS create `examples/`, `templates/`, and `resources/` subfolders.
 - Include frontmatter: `name` equals folder name, `description` with invoke triggers.
 
 ## ❌ PROHIBITED
