@@ -15,16 +15,18 @@ description: "<does X. Invoke when Y or user asks Z>"
 - Folder: `.trae/skills/<skill-name>/`
 - File: `.trae/skills/<skill-name>/SKILL.md`
 - Subfolders: `examples/`, `templates/`, `resources/`
+- Examples split by purpose: `styling-patterns.md`, `component-patterns.md`, `destructive-changes.md`, `verification-output.md`
 
 ## Guidance
 - <how to apply patterns>
 
 ## Examples
-- Put copyable snippets in `examples/` and reference them here.
-
-```txt
-<example snippet placeholder>
-```
+- Split examples by purpose in `examples/` folder:
+  - `styling-patterns.md` - Pattern detection examples
+  - `component-patterns.md` - API and composition examples
+  - `destructive-changes.md` - Breaking change warnings
+  - `verification-output.md` - User message templates
+- Reference examples using relative links: `[styling examples](examples/styling-patterns.md)`
 
 ## Templates
 - Put scaffolds with `{{placeholders}}` in `templates/`.

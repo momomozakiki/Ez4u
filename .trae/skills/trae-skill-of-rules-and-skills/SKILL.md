@@ -1,6 +1,5 @@
----
 name: "trae-skill-of-rules-and-skills"
-description: "Categorizes guidance into rules vs skills. Invoke when adding/modifying guidance or deciding placement."
+description: "Meta-skill for .trae guidance only. Invoke when creating/updating rules or skills, never for project code."
 ---
 
 # TRAE Skills: Guidance Categorization
@@ -8,10 +7,12 @@ description: "Categorizes guidance into rules vs skills. Invoke when adding/modi
 ## Purpose
 - Apply categorization protocol to place content in rules or skills.
 - Enforce correct skill folder structure and frontmatter.
+- Act ONLY on `.trae/rules/**` and `.trae/skills/**` guidance files, not on project code paths like `src/**` or `app/**`.
 
 ## When to Invoke
-- Before creating or updating `.trae/rules/*.md` or `.trae/skills/*/SKILL.md`.
+- Before creating or updating `.trae/rules/*.md` or any files under `.trae/skills/**`.
 - When deciding where new guidance belongs (rule vs skill).
+- NEVER invoke this skill to make changes directly in application code (e.g. `src/**`, `app/**`).
 
 ## Decision Flow
 1. Non‑negotiable constraint → place in rules (ALWAYS/NEVER, no examples).
@@ -28,70 +29,20 @@ description: "Categorizes guidance into rules vs skills. Invoke when adding/modi
   - `examples/` - Reference snippets demonstrating the skill in action (runnable code samples, usage patterns)
   - `templates/` - Scaffolds with `{{placeholders}}` for quick creation (standardized formats with fill-in fields)
   - `resources/` - Supporting assets and reference materials (external references, documentation)
+- Split skill examples by purpose for clarity:
+  - `styling-patterns.md` - Pattern detection for different styling approaches
+  - `component-patterns.md` - Component composition and API patterns
+  - `destructive-changes.md` - When changes must break patterns and approval requirements
+  - `verification-output.md` - Copy-paste templates for user-facing messages
+- Reference examples from SKILL.md using relative links to purpose-specific files.
 - Keep all skill assets inside the skill directory.
 - Keep SKILL.md concise (purpose, guidance, checklist). Place extended code samples in `examples/` and scaffolds in `templates/`.
 
-## Examples (Categorization Rationale)
-```
-[CATEGORIZATION] Placing in rules.md because this is a non‑negotiable security constraint.
-[CATEGORIZATION] Placing in skills.md because this demonstrates a reusable implementation pattern.
-```
-
-## Template Usage Instructions
-
-### Using Skill Templates
-1. Copy `templates/skill-template.md` to your new skill directory
-2. Replace `<skill-name>` with your actual skill folder name (lowercase-hyphen format)
-3. Replace `<does X. Invoke when Y or user asks Z>` with specific invoke triggers
-4. Fill in `<Skill Title>`, `<what this skill teaches>`, and `<how to apply patterns>`
-5. Add runnable code examples in the Examples section
-
-### Using Rule Templates  
-1. Copy `templates/rules-template.md` to your new rule file
-2. Add appropriate frontmatter (see Rule Frontmatter Setup section above)
-3. Replace constraint placeholders with your specific rules
-4. Ensure MUST DO/PROHIBITED sections are actionable and specific
-
-### Template Checklist
-- Templates contain `{{placeholders}}` for easy identification
-- Skill templates include required frontmatter fields
-- Rule templates follow the MUST DO/PROHIBITED format
-- All placeholders are replaced before finalizing
-
-## Rule Frontmatter Setup
-
-### Three Application Modes
-
-1. **Always Apply Mode** - Rule applies to all files, all the time
-```yaml
----
-alwaysApply: true
----
-```
-**Use when**: Universal constraints like security, formatting, or core architectural rules.
-
-2. **Apply Intelligently Mode** - Rule applies based on context/description matching
-```yaml
----
-alwaysApply: false
-description: "Applies when editing Tailwind-styled React/Next components"
----
-```
-**Use when**: Domain-specific guidance that should trigger contextually.
-
-3. **Apply to Specific Files Mode** - Rule applies only to matched file patterns
-```yaml
----
-alwaysApply: false
-globs:
-  - "src/**/*.tsx"
-  - "styles/**/*.css"
----
-```
-**Use when**: File-type or location-specific rules.
-
-### Frontmatter Checklist
-- Confirm `alwaysApply` matches the intended mode (true/false)
-- For intelligent mode: Provide concise `description` with invoke triggers (<200 chars)
-- For specific-files mode: Define `globs` with proper file patterns
-- Never use both `description` and `globs` together
+## Resources
+- [Categorization Examples](./examples/categorization-examples.md) - How to decide between creating a rule or a skill.
+- [Structure Examples](./examples/structure-examples.md) - The mandatory folder and file structure for skills and rules.
+- [Frontmatter Patterns](./examples/frontmatter-patterns.md) - Correct and incorrect frontmatter for skills and rules.
+- [Template Usage](./examples/template-usage.md) - How to use the provided templates to create new skills and rules.
+- [AI Guidance Reference](./resources/ai-guidance-reference.md) - Deeper reference on AI behavior.
+- [Rule Template](./templates/rules-template.md) - Template for creating new rules.
+- [Skill Template](./templates/skill-template.md) - Template for creating new skills.

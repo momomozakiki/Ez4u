@@ -137,3 +137,9 @@ BEFORE executing seed task:
 5. Does this seed affect ≤1 file OR ≤1 logical unit?
 
 IF any answer = NO → REJECT seed and replan smaller task
+
+## Resources
+- [Planning Patterns](./examples/planning-patterns.md) - Monolithic vs incremental planning approaches
+- [Validation Examples](./examples/validation-examples.md) - Task validation checkpoint templates
+- [Execution Templates](./examples/execution-templates.md) - Output templates for task completion
+- [Failure Scenarios](./examples/failure-scenarios.md) - Recovery patterns when planning fails

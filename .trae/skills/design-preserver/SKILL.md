@@ -41,6 +41,9 @@ Check project for:
 4. **VERIFY preservation** after modifications
 
 ## Resources
-- [Pattern Examples](./examples/preservation-examples.md) - Code samples showing preservation in action
+- [Styling Patterns](./examples/styling-patterns.md) - How to detect and preserve Tailwind vs custom CSS
+- [Component Patterns](./examples/component-patterns.md) - Props API, composition, and naming conventions
+- [Destructive Changes](./examples/destructive-changes.md) - When changes must break patterns and approval requirements
+- [Verification Output](./examples/verification-output.md) - Copy-paste templates for user messages
 - [Preservation Templates](./templates/preservation-plan-template.md) - Templates for documenting changes
 - [Common Patterns Reference](./resources/common-patterns.md) - Reference for common project patterns
