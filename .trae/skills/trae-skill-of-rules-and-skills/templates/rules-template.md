@@ -1,3 +1,10 @@
+---
+alwaysApply: false
+description: "<when this rule should apply>"
+globs:
+  - "<optional file glob>"
+---
+
 # Rules Template
 
 ## ✅ MUST DO
@@ -8,4 +15,4 @@
 - <anti‑pattern>
 
 ## Verification
-- <checks to ensure compliance>
+- <a concrete check to confirm the constraint is followed>

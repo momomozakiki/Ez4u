@@ -22,13 +22,14 @@ description: "Provides Tailwind v4 patterns and component snippets. Invoke when 
 - Ring/focus: `focus:outline-none focus:ring-2 focus:ring-ring`
 
 ## Components & Patterns
-- See detailed examples under `examples/tailwind-examples.md` for buttons, cards, inputs, popover triggers, and layout sections.
+- See detailed examples in examples/ directory for specific patterns and use cases.
 
 ## Notes
 - Prefer project tokens from globals.css @theme over raw hex values.
 - Use responsive prefixes (sm:, md:, lg:) and pseudo-class variants (hover:, focus:, disabled:).
 
-## See Also
-- Examples: `examples/tailwind-examples.md`
-- Templates: `templates/tailwind-component-template.md`, `templates/tailwind-utility-patterns-template.md`
-- Resources: `resources/tailwind-reference.md`
+## Resources
+- [Utility Patterns](./examples/utility-patterns.md) - Basic utility combinations and state variants
+- [Component Patterns](./examples/component-patterns.md) - Reusable component class patterns
+- [Responsive Patterns](./examples/responsive-patterns.md) - Breakpoint and responsive design patterns
+- [Token Usage](./examples/token-usage.md) - Design token usage and theme-aware patterns
